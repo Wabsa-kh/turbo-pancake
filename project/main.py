@@ -217,6 +217,18 @@ class Uploader:
         print("\n🚨 ALL ACCOUNTS FAILED.")
         return None
 
+class YouTubeBot:
+    def __init__(self, root_dir):
+        self.root_dir = root_dir
+        os.chdir(root_dir)
+        
+        self.config = ConfigManager.load_json(CONFIG_FILE)
+        self.database = ConfigManager.load_json(DATABASE_FILE, {
+            "uploaded_videos": [],
+            "queues": {},
+            "state": {"last_channel_index": -1}
+        })
+        
         # Load tokens from file or environment variable
         if os.path.exists(TOKENS_FILE):
             self.tokens = ConfigManager.load_json(TOKENS_FILE)

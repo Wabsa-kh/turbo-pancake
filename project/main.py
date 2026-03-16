@@ -47,36 +47,45 @@ class Scanner:
             'extract_flat': True,
             'quiet': True,
             'extractor_args': {'youtube': {'player_client': ['ios', 'android', 'tv']}},
-            # Remove playlistend to scan the entire channel
         }
         
-        # We always scan the full channel now to ensure we don't miss anything
-        # (yt-dlp extract_flat is fast anyway)
-
-        try:
-            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        def _perform_scan(opts):
+            with yt_dlp.YoutubeDL(opts) as ydl:
                 info = ydl.extract_info(channel_url, download=False)
                 if 'entries' in info:
                     entries = list(info['entries'])
                     new_urls = []
                     for e in entries:
                         video_id = e.get('id')
-                        # BUG FIX: Ensure it's a valid 11-char YouTube Video ID
-                        # This prevents picking up Channel IDs (which are longer) or other metadata
                         if video_id and len(video_id) == 11:
                             video_url = f"https://www.youtube.com/watch?v={video_id}"
                             if video_id not in self.uploaded_ids and video_url not in current_queue:
                                 new_urls.append(video_url)
-                        elif video_id:
-                            print(f"   -> Skipping non-video entry: {video_id}")
-                    
-                    if new_urls:
-                        print(f"   -> Found {len(new_urls)} new videos.")
-                        return new_urls
-                    else:
-                        print("   -> No new videos found.")
+                    return new_urls
+            return []
+
+        # 1. Try Anonymous
+        try:
+            results = _perform_scan(ydl_opts)
+            if results:
+                print(f"   -> Found {len(results)} new videos (Anonymous).")
+                return results
+            print("   -> No new videos found (Anonymous).")
         except Exception as e:
-            print(f"   ⚠️ Scanner failed for {channel_url}: {e}")
+            print(f"   ⚠️ Anonymous scan failed: {e}. Trying cookies...")
+
+        # 2. Try with Cookies if file exists
+        if os.path.exists(COOKIES_FILE):
+            ydl_opts['cookiefile'] = COOKIES_FILE
+            try:
+                results = _perform_scan(ydl_opts)
+                if results:
+                    print(f"   -> Found {len(results)} new videos (Cookies).")
+                    return results
+                print("   -> No new videos found (Cookies).")
+            except Exception as e:
+                print(f"   ❌ Cookie scan also failed: {e}")
+        
         return []
 
 class Downloader:
@@ -85,26 +94,29 @@ class Downloader:
 
     def get_strategies(self):
         strategies = [
-            # 1. Anonymous Mobile (Best for avoiding blocks initially)
+            # 1. Anonymous Mobile
             {
                 'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]',
                 'extractor_args': {'youtube': {'player_client': ['ios', 'android']}},
-            },
-            # 2. TV Client
-            {
-                'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]',
-                'extractor_args': {'youtube': {'player_client': ['tv']}},
             }
         ]
         
         # Add cookie-based strategies if cookies exist
         if self.cookies_path and os.path.exists(self.cookies_path):
             strategies.extend([
+                # 2. TV Client with Cookies
+                {
+                    'cookiefile': self.cookies_path,
+                    'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]',
+                    'extractor_args': {'youtube': {'player_client': ['tv']}},
+                },
+                # 3. Web Safari Client with Cookies
                 {
                     'cookiefile': self.cookies_path,
                     'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]',
                     'extractor_args': {'youtube': {'player_client': ['web_safari', 'web_creator']}},
                 },
+                # 4. iOS Client with Cookies
                 {
                     'cookiefile': self.cookies_path,
                     'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]',

@@ -1,0 +1,59 @@
+name: YouTube Clone Bot
+
+on:
+  workflow_dispatch:
+    inputs:
+      add_channel:
+        description: 'Add a new YouTube channel URL to track'
+        required: false
+        default: ''
+  schedule:
+    - cron: '0 */4 * * *' # Every 4 hours
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install Deno
+        run: |
+          curl -fsSL https://deno.land/x/install/install.sh | sh
+          echo "$HOME/.deno/bin" >> $GITHUB_PATH
+
+      - name: Install FFmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - name: Install Dependencies
+        run: pip install -r project/requirements.txt
+
+      - name: Add New Channel (Manual)
+        if: github.event.inputs.add_channel != ''
+        run: |
+          python -c "import json; f='project/config.json'; d=json.load(open(f)); d['source_channels'].append('${{ github.event.inputs.add_channel }}'); d['source_channels']=list(set(d['source_channels'])); json.dump(d, open(f, 'w'), indent=2)"
+
+      - name: Run Bot
+        working-directory: project
+        run: python main.py
+
+      - name: Save Persistent State
+        run: |
+          git config --global user.name "YouTube-Bot"
+          git config --global user.email "bot@github.actions"
+          git add project/database.json project/config.json
+          if ! git diff --staged --quiet; then
+            git commit -m "🤖 Sync state and config"
+            git pull --rebase origin main
+            git push
+          fi

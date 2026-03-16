@@ -43,22 +43,38 @@ class Scanner:
 
     def scan_channel(self, channel_url, current_queue):
         print(f"\n🔍 SCANNING: {channel_url}")
+        
+        # Standardize URL for deep scanning if it's a channel
+        if "@" in channel_url and "/videos" not in channel_url:
+            scan_url = channel_url.rstrip("/") + "/videos"
+        else:
+            scan_url = channel_url
+
         ydl_opts = {
             'extract_flat': True,
             'quiet': True,
-            'extractor_args': {'youtube': {'player_client': ['ios', 'android', 'tv']}},
+            'extractor_args': {'youtube': {'player_client': ['ios', 'android', 'tv']}}
         }
         
+        if not current_queue:
+            print("   -> Initial scan: getting more videos.")
+        else:
+            print("   -> Regular scan: getting latest only.")
+            ydl_opts['playlistend'] = 20
+
         def _perform_scan(opts):
             with yt_dlp.YoutubeDL(opts) as ydl:
-                info = ydl.extract_info(channel_url, download=False)
+                info = ydl.extract_info(scan_url, download=False)
                 if 'entries' in info:
                     entries = list(info['entries'])
                     new_urls = []
                     for e in entries:
-                        video_id = e.get('id')
-                        if video_id and len(video_id) == 11:
-                            video_url = f"https://www.youtube.com/watch?v={video_id}"
+                        video_url = e.get('url') or f"https://www.youtube.com/watch?v={e.get('id')}"
+                        # Regex from reference implementation
+                        match = re.search(r"(?:v=|\/)([0-9A-Za-z_-]{11}).*", video_url)
+                        video_id = match.group(1) if match else None
+                        
+                        if video_id:
                             if video_id not in self.uploaded_ids and video_url not in current_queue:
                                 new_urls.append(video_url)
                     return new_urls
@@ -70,7 +86,6 @@ class Scanner:
             if results:
                 print(f"   -> Found {len(results)} new videos (Anonymous).")
                 return results
-            print("   -> No new videos found (Anonymous).")
         except Exception as e:
             print(f"   ⚠️ Anonymous scan failed: {e}. Trying cookies...")
 
@@ -82,7 +97,6 @@ class Scanner:
                 if results:
                     print(f"   -> Found {len(results)} new videos (Cookies).")
                     return results
-                print("   -> No new videos found (Cookies).")
             except Exception as e:
                 print(f"   ❌ Cookie scan also failed: {e}")
         
@@ -92,43 +106,35 @@ class Downloader:
     def __init__(self, cookies_path=None):
         self.cookies_path = cookies_path
 
-    def get_strategies(self):
+    def download_video(self, url):
+        print(f"\n📥 DOWNLOADING: {url}")
+        
         strategies = [
-            # 1. Anonymous Mobile
-            {
+            { # 1. Anonymous Mobile
+                'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]',
+                'extractor_args': {'youtube': {'player_client': ['ios', 'android']}},
+            },
+            { # 2. TV Client with Cookies
+                'cookiefile': self.cookies_path,
+                'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]',
+                'extractor_args': {'youtube': {'player_client': ['tv']}},
+            },
+            { # 3. Web Safari Client with Cookies
+                'cookiefile': self.cookies_path,
+                'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]',
+                'extractor_args': {'youtube': {'player_client': ['web_safari', 'web_creator']}},
+            },
+            { # 4. iOS Client with Cookies
+                'cookiefile': self.cookies_path,
                 'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]',
                 'extractor_args': {'youtube': {'player_client': ['ios', 'android']}},
             }
         ]
         
-        # Add cookie-based strategies if cookies exist
-        if self.cookies_path and os.path.exists(self.cookies_path):
-            strategies.extend([
-                # 2. TV Client with Cookies
-                {
-                    'cookiefile': self.cookies_path,
-                    'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]',
-                    'extractor_args': {'youtube': {'player_client': ['tv']}},
-                },
-                # 3. Web Safari Client with Cookies
-                {
-                    'cookiefile': self.cookies_path,
-                    'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]',
-                    'extractor_args': {'youtube': {'player_client': ['web_safari', 'web_creator']}},
-                },
-                # 4. iOS Client with Cookies
-                {
-                    'cookiefile': self.cookies_path,
-                    'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]',
-                    'extractor_args': {'youtube': {'player_client': ['ios', 'android']}},
-                }
-            ])
-        return strategies
+        # Filter strategies that require cookies if cookies don't exist
+        if not self.cookies_path or not os.path.exists(self.cookies_path):
+            strategies = [s for s in strategies if 'cookiefile' not in s]
 
-    def download_video(self, url):
-        print(f"\n📥 DOWNLOADING: {url}")
-        
-        strategies = self.get_strategies()
         for i, base_config in enumerate(strategies):
             print(f"   -> Strategy {i+1}...")
             config = base_config.copy()

@@ -2,6 +2,7 @@
     "source_channels": [
         "https://www.youtube.com/@KDrama-Nest"
     ],
+    "upload_order": "newest",
     "upload_settings": {
         "category_id": "24",
         "language": "en",

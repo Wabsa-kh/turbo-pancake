@@ -8,7 +8,7 @@ on:
         required: false
         default: ''
   schedule:
-    - cron: '0 */12 * * *' # Every 4 hours
+    - cron: '0 */8 * * *' # Every 4 hours
 
 jobs:
   run-bot:

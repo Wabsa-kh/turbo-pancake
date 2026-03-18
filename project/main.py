@@ -47,7 +47,7 @@ def get_auth_service(account):
 # ==========================================
 # 1. SMART SCANNER (Reference Aligned)
 # ==========================================
-def update_channel_queues(source_channels, uploaded_ids, all_queues):
+def update_channel_queues(source_channels, uploaded_ids, all_queues, config):
     for channel_url in source_channels:
         print(f"\n🔍 SCANNING: {channel_url}")
         
@@ -83,6 +83,9 @@ def update_channel_queues(source_channels, uploaded_ids, all_queues):
                     return fresh
             return []
 
+        # Get upload order from config (default to oldest)
+        upload_order = config.get('upload_order', 'oldest')
+
         try:
             # Try Anonymous
             new_videos = _perform_scan(ydl_opts)
@@ -92,11 +95,15 @@ def update_channel_queues(source_channels, uploaded_ids, all_queues):
                 new_videos = _perform_scan(ydl_opts)
             
             if new_videos:
-                # Reverse to get Oldest -> Newest inside the batch
-                new_videos.reverse()
-                # Append to the end of existing queue
-                all_queues[channel_url] = all_queues[channel_url] + new_videos
-                print(f"   -> Added {len(new_videos)} new videos (Oldest first).")
+                if upload_order == 'newest':
+                    # Prepend (Newest First)
+                    all_queues[channel_url] = new_videos + all_queues[channel_url]
+                    print(f"   -> Added {len(new_videos)} new videos (Newest first).")
+                else:
+                    # Reverse and Append (Oldest First)
+                    new_videos.reverse()
+                    all_queues[channel_url] = all_queues[channel_url] + new_videos
+                    print(f"   -> Added {len(new_videos)} new videos (Oldest first).")
             else:
                 print("   -> No new videos found.")
         except Exception as e:
@@ -238,7 +245,7 @@ if __name__ == "__main__":
         except: print("❌ Error parsing BOT_TOKENS env var.")
 
     # 1. Update Queues
-    database['queues'] = update_channel_queues(config['source_channels'], database['uploaded_videos'], database['queues'])
+    database['queues'] = update_channel_queues(config['source_channels'], database['uploaded_videos'], database['queues'], config)
     save_json(DATABASE_FILE, database)
 
     # 2. Select Video (Round Robin)

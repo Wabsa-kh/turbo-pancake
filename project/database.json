@@ -9,11 +9,11 @@
     "kLoreRi3wSo",
     "cG-i-NGZYM8",
     "4S6Qe54wZlg",
-    "xdqhR56PSAY"
+    "xdqhR56PSAY",
+    "21kTL_ZrFsc"
   ],
   "queues": {
     "https://www.youtube.com/@user9562-s9g": [
-      "https://www.youtube.com/watch?v=21kTL_ZrFsc",
       "https://www.youtube.com/watch?v=x6EnE5LhPOA",
       "https://www.youtube.com/watch?v=tWvbUoJBSXg",
       "https://www.youtube.com/watch?v=Uq56V1gPUeE",
@@ -259,6 +259,6 @@
     ]
   },
   "state": {
-    "last_channel_index": 1
+    "last_channel_index": 0
   }
 }

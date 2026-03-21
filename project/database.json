@@ -19,11 +19,11 @@
     "Uq56V1gPUeE",
     "Hd5wzrf-sMM",
     "DNJ-INoSjdM",
-    "YVsEaUCTltI"
+    "YVsEaUCTltI",
+    "HooqKptlDQM"
   ],
   "queues": {
     "https://www.youtube.com/@user9562-s9g": [
-      "https://www.youtube.com/watch?v=HooqKptlDQM",
       "https://www.youtube.com/watch?v=jpciSrterhc",
       "https://www.youtube.com/watch?v=VRBj-AKmzqk",
       "https://www.youtube.com/watch?v=wH53A6zcHE8",
@@ -259,6 +259,6 @@
     ]
   },
   "state": {
-    "last_channel_index": 1
+    "last_channel_index": 0
   }
 }

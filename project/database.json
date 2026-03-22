@@ -22,7 +22,8 @@
     "YVsEaUCTltI",
     "HooqKptlDQM",
     "zO8NRC3vmoU",
-    "jpciSrterhc"
+    "jpciSrterhc",
+    "lJ4DOBWnT7c"
   ],
   "queues": {
     "https://www.youtube.com/@user9562-s9g": [
@@ -133,7 +134,6 @@
       "https://www.youtube.com/watch?v=oUYR2PbdGtU"
     ],
     "https://www.youtube.com/@dylan_ranks": [
-      "https://www.youtube.com/watch?v=lJ4DOBWnT7c",
       "https://www.youtube.com/watch?v=kY66SDJb6ww",
       "https://www.youtube.com/watch?v=6IUDUdmzUnw",
       "https://www.youtube.com/watch?v=289gfI9ArZk",
@@ -259,6 +259,6 @@
     ]
   },
   "state": {
-    "last_channel_index": 0
+    "last_channel_index": 1
   }
 }

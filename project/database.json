@@ -25,11 +25,11 @@
     "jpciSrterhc",
     "lJ4DOBWnT7c",
     "VRBj-AKmzqk",
-    "kY66SDJb6ww"
+    "kY66SDJb6ww",
+    "wH53A6zcHE8"
   ],
   "queues": {
     "https://www.youtube.com/@user9562-s9g": [
-      "https://www.youtube.com/watch?v=wH53A6zcHE8",
       "https://www.youtube.com/watch?v=15nte0K60y4",
       "https://www.youtube.com/watch?v=S7GOAXkkjFY",
       "https://www.youtube.com/watch?v=XrUTGz_SmKo",
@@ -259,6 +259,6 @@
     ]
   },
   "state": {
-    "last_channel_index": 1
+    "last_channel_index": 0
   }
 }

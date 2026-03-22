@@ -23,11 +23,11 @@
     "HooqKptlDQM",
     "zO8NRC3vmoU",
     "jpciSrterhc",
-    "lJ4DOBWnT7c"
+    "lJ4DOBWnT7c",
+    "VRBj-AKmzqk"
   ],
   "queues": {
     "https://www.youtube.com/@user9562-s9g": [
-      "https://www.youtube.com/watch?v=VRBj-AKmzqk",
       "https://www.youtube.com/watch?v=wH53A6zcHE8",
       "https://www.youtube.com/watch?v=15nte0K60y4",
       "https://www.youtube.com/watch?v=S7GOAXkkjFY",
@@ -259,6 +259,6 @@
     ]
   },
   "state": {
-    "last_channel_index": 1
+    "last_channel_index": 0
   }
 }

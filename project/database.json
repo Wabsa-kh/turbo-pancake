@@ -44,7 +44,8 @@
     "SclLdKOVQYw",
     "VBZt2YakBiQ",
     "if3M6HTZKlI",
-    "H-yKjZH3zKg"
+    "H-yKjZH3zKg",
+    "zTT9FzXuNic"
   ],
   "queues": {
     "https://www.youtube.com/@user9562-s9g": [
@@ -144,7 +145,6 @@
       "https://www.youtube.com/watch?v=oUYR2PbdGtU"
     ],
     "https://www.youtube.com/@dylan_ranks": [
-      "https://www.youtube.com/watch?v=zTT9FzXuNic",
       "https://www.youtube.com/watch?v=lNxLJ0iYr7w",
       "https://www.youtube.com/watch?v=oaJyoDgJYX8",
       "https://www.youtube.com/watch?v=u08zuRemL-Y",
@@ -260,6 +260,6 @@
     ]
   },
   "state": {
-    "last_channel_index": 0
+    "last_channel_index": 1
   }
 }

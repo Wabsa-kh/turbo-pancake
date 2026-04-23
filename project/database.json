@@ -215,11 +215,11 @@
     "w2lJVp-CSTw",
     "PKoRRHNHifU",
     "fDRYLotvWok",
-    "ce8x-dhftbk"
+    "ce8x-dhftbk",
+    "3MKar8R4Lf0"
   ],
   "queues": {
     "https://www.youtube.com/@user9562-s9g": [
-      "https://www.youtube.com/watch?v=3MKar8R4Lf0",
       "https://www.youtube.com/watch?v=CNV8ZoTKzUA",
       "https://www.youtube.com/watch?v=qXFcq1NVyac",
       "https://www.youtube.com/watch?v=-mbSblg_vts",
@@ -260,6 +260,6 @@
     ]
   },
   "state": {
-    "last_channel_index": 1
+    "last_channel_index": 0
   }
 }
